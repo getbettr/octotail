@@ -98,31 +98,60 @@ async def test_nom_cookies(cookies, expected, set_cookies):
 
 
 @pytest.mark.parametrize(
-    ("opts", "otp_enabled", "expected"),
+    ("opts", "otp_enabled", "eval_results", "expected"),
     [
         (
             Namespace(gh_user="foo", gh_pass="bar"),
             False,
+            [],
             "##success",
         ),
         (
-            Namespace(gh_user="foo", gh_pass="bar", gh_otp=None),
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp=None, gh_otps_cmd="false"),
             True,
-            RuntimeError("GitHub requested OTP authentication, but no OTP token was provided"),
+            ["app_totp", "form", "app_totp"],
+            RuntimeError("Error while running OTP command: Command 'false' returned non-zero exit status 1."),
         ),
         (
-            Namespace(gh_user="foo", gh_pass="bar", gh_otp="yepp, i have an OTP"),
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp=None, gh_otps_cmd=None),
             True,
+            ["app_totp", "form", "app_totp"],
+            RuntimeError("GitHub requested OTP authentication, but no OTP token or command was provided"),
+        ),
+        (
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp="yepp, i have an OTP", gh_otps_cmd=None),
+            True,
+            ["app_totp", "form", "app_totp"],
+            "##success",
+        ),
+        (
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp=None, gh_otps_cmd='echo -e "123\n456"'),
+            True,
+            ["app_totp", "form", "app_totp"],
+            "##success",
+        ),
+        (
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp=None, gh_otps_cmd='echo -e "123\n456"'),
+            True,
+            ["app_totp", "%%bogus%%"],
+            "##success",
+        ),
+        (
+            Namespace(gh_user="foo", gh_pass="bar", gh_otp="yepp, i have an OTP", gh_otps_cmd=None),
+            True,
+            ["app_totp", "form", "%%bogus%%"],
             "##success",
         ),
     ],
 )
 @pytest.mark.asyncio
-async def test_login_flow(opts: Opts, otp_enabled: bool, expected):
+async def test_login_flow(opts: Opts, otp_enabled: bool, eval_results: list[str], expected):
     page = AsyncMock()
     page.cookies.return_value = "##success"
+
     if otp_enabled:
-        page.evaluate.return_value = "app_totp"
+        evaluate_results_gen = iter(eval_results)
+        page.evaluate.side_effect = lambda *_, **__: next(evaluate_results_gen)
 
     got = await _login_flow(page, opts)
 

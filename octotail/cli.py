@@ -101,6 +101,17 @@ class Opts:
             rich_help_panel="Authentication",
         ),
     ] = None
+    gh_otps_cmd: t.Annotated[
+        str | None,
+        Option(
+            envvar="OCTOTAIL_GH_OTPS_CMD",
+            help=(
+                "Command for generating GitHub OTPs. "
+                "Should generate at least 2 codes, one per line. (for web auth, if 2FA is on)"
+            ),
+            rich_help_panel="Authentication",
+        ),
+    ] = None
     workflow_name: t.Annotated[
         str | None,
         Option(

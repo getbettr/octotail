@@ -10,6 +10,7 @@ from contextlib import suppress
 from multiprocessing.queues import Queue
 from pathlib import Path
 from queue import Empty
+from subprocess import CalledProcessError, check_output
 
 from pykka import ActorRef, ThreadingActor
 from pyppeteer import launch
@@ -214,16 +215,35 @@ async def _login_flow(page: Page, opts: Opts) -> Cookies | RuntimeError:
     el = await page.waitForSelector(f"#app_totp, [data-login='{opts.gh_user}']")
     el_id = await page.evaluate("(element) => element.id", el)
     if el_id == "app_totp":
-        if opts.gh_otp is None:
-            return RuntimeError(
-                "GitHub requested OTP authentication, but no OTP token was provided"
-            )
-        await el.type(opts.gh_otp)
+        otps = _get_otps(opts)
+        if isinstance(otps, RuntimeError):
+            return otps
+
+        await el.type(otps[0])
         await aio.gather(
             page.keyboard.press("Enter"),
             page.waitForNavigation(),
         )
-        await page.waitForSelector(f"[data-login='{opts.gh_user}']")
+
+        el = await page.waitForSelector(f"[action='/settings/two_factor_checkup'], [data-login='{opts.gh_user}']")
+        el_tag = await page.evaluate("(element) => element.tagName.toLowerCase()", el)
+        if el_tag == "form":
+            button = await page.waitForSelector('button[type="submit"]')
+            await aio.gather(
+                button.click(),
+                page.waitForNavigation(),
+            )
+
+            el = await page.waitForSelector(f"#app_totp, [data-login='{opts.gh_user}']")
+            el_id = await page.evaluate("(element) => element.id", el)
+            if el_id == "app_totp":
+                await el.type(otps[-1])
+                await aio.gather(
+                    page.keyboard.press("Enter"),
+                    page.waitForNavigation(),
+                )
+                await page.goto("https://github.com/")
+                await page.waitForSelector(f"[data-login='{opts.gh_user}']")
 
     cookies = await page.cookies()
     await page.goto("about:blank")
@@ -246,3 +266,19 @@ async def _nom_cookies(cookies: Cookies | None, page: Page) -> bool:
 def _is_close_to_expiry(ts: str) -> bool:
     _ts, now = float(ts), time.time()
     return _ts > now and (_ts - now) < 24 * 3600
+
+
+def _get_otps(opts: Opts) -> list[str] | RuntimeError:
+    if opts.gh_otp is None and opts.gh_otps_cmd is None:
+        return RuntimeError(
+            "GitHub requested OTP authentication, but no OTP token or command was provided"
+        )
+
+    # gh_otp_cmd takes precedence
+    if opts.gh_otps_cmd is not None:
+        try:
+            return check_output(opts.gh_otps_cmd, shell=True).decode().strip().split("\n")[:2]
+        except CalledProcessError as cpe:
+            return RuntimeError(f"Error while running OTP command: {cpe}")
+    else:
+        return [opts.gh_otp]

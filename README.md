@@ -150,18 +150,21 @@ section of the mitmproxy documentation, changing `~/.mitmproxy` with
                              [required]
 
 -- Authentication ----------------------------------------------------------------------------------
-  *  --gh-pat         TEXT  GitHub personal access token. (for API auth)
-                            [env var: OCTOTAIL_GH_PAT]
-                            [required]
-  *  --gh-user        TEXT  GitHub username. (for web auth)
-                            [env var: OCTOTAIL_GH_USER]
-                            [required]
-  *  --gh-pass        TEXT  GitHub password. (for web auth)
-                            [env var: OCTOTAIL_GH_PASS]
-                            [required]
-     --gh-otp         TEXT  GitHub OTP. (for web auth, if 2FA is on)
-                            [env var: OCTOTAIL_GH_OTP]
-                            [default: None]
+  *  --gh-pat             TEXT  GitHub personal access token. (for API auth)
+                                [env var: OCTOTAIL_GH_PAT]
+                                [required]
+  *  --gh-user            TEXT  GitHub username. (for web auth)
+                                [env var: OCTOTAIL_GH_USER]
+                                [required]
+  *  --gh-pass            TEXT  GitHub password. (for web auth)
+                                [env var: OCTOTAIL_GH_PASS]
+                                [required]
+     --gh-otp             TEXT  GitHub OTP. (for web auth, if 2FA is on)
+                                [env var: OCTOTAIL_GH_OTP]
+                                [default: None]
+     --gh-otps-cmd        TEXT  Command for generating GitHub OTPs. (for web auth, if 2FA is on)
+                                [env var: OCTOTAIL_GH_OTPS_CMD]
+                                [default: None]
 
 -- Workflow filters --------------------------------------------------------------------------------
   --workflow  -w      TEXT       Only consider workflows with this name.
