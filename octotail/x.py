@@ -209,7 +209,7 @@ def _show_help(
             is_eager=True,
             rich_help_panel="Options",
         ),
-    ] = None
+    ] = None,
 ) -> None:
     pass
 

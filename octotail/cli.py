@@ -1,4 +1,4 @@
-""" Options class + some magic so we can define our args in one place only. """
+"""Options class + some magic so we can define our args in one place only."""
 
 import os
 import re

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Git pipelines. """
+"""Git pipelines."""
 import re
 import typing as t
 from pathlib import Path

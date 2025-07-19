@@ -18,10 +18,6 @@ RANDOM_UA: str = UserAgent().random
 DEBUG = os.getenv("DEBUG") not in ["0", "false", "False", None]
 FIND_FREE_PORT_TRIES = 100
 
-A = t.TypeVar("A")
-B = t.TypeVar("B")
-T = t.TypeVar("T")
-
 
 class Retry:
     """Retry variant."""
@@ -30,7 +26,7 @@ class Retry:
         return isinstance(other, Retry)
 
 
-def flatmap(f: t.Callable[[A], t.Iterable[B]], xs: t.Iterable[A]) -> t.Iterable[B]:
+def flatmap[A, B](f: t.Callable[[A], t.Iterable[B]], xs: t.Iterable[A]) -> t.Iterable[B]:
     """Map f over an iterable and flatten the result set."""
     return (y for x in xs for y in f(x))
 
@@ -64,11 +60,9 @@ def perform_io[**P, R](fn: t.Callable[P, IOResultE[R]]) -> t.Callable[P, ResultE
     return inner
 
 
-def retries[
-    **P, R
-](num_retries: int, retry_delay: float) -> t.Callable[
-    [t.Callable[P, ResultE[R] | Retry]], t.Callable[P, ResultE[R]]
-]:
+def retries[**P, R](
+    num_retries: int, retry_delay: float
+) -> t.Callable[[t.Callable[P, ResultE[R] | Retry]], t.Callable[P, ResultE[R]]]:
     """ "just put a retry loop around it" """
 
     def wrapper(fn: t.Callable[P, ResultE[R] | Retry]) -> t.Callable[P, ResultE[R]]:
@@ -107,7 +101,7 @@ def is_port_open(port: int) -> bool:
     return res != 0
 
 
-def remove_consecutive_falsy(items: t.Iterable[T]) -> t.Generator[T, None, None]:
+def remove_consecutive_falsy[T](items: t.Iterable[T]) -> t.Generator[T, None, None]:
     yielded_empty = False
     for item in items:
         if item or not yielded_empty:
