@@ -2,12 +2,12 @@
 
 set -eux
 
-# install sudo + makepgk dependencies
+# install sudo + makepkg dependencies
 pacman -Sy --quiet --noconfirm sudo git binutils fakeroot debugedit openssh oath-toolkit
 
 # install paru
-PARU_VERSION=v2.0.4
-curl --fail --location "https://github.com/Morganamilo/paru/releases/download/v2.0.4/paru-${PARU_VERSION}-x86_64.tar.zst" --output /tmp/paru.tar.zst
+PARU_VERSION=v2.1.0
+curl --fail --location "https://github.com/Morganamilo/paru/releases/download/${PARU_VERSION}/paru-${PARU_VERSION}-x86_64.tar.zst" --output /tmp/paru.tar.zst
 tar --directory "/usr/local/bin" -xvf "/tmp/paru.tar.zst" --wildcards "paru"
 rm /tmp/paru.tar.zst
 
@@ -21,7 +21,7 @@ useradd -m $USER_NAME
 echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 
 # install chromium + uv/uvx + gh
-sudo -u $USER_NAME bash -x -c "paru -S --noconfirm ungoogled-chromium-bin uv github-cli; uv python install 3.12"
+sudo -u $USER_NAME bash -x -c "paru -S --noconfirm ungoogled-chromium-bin uv github-cli; uv python install 3.12; paru -c --noconfirm"
 
 # yolo ssh
 mkdir -p /home/$USER_NAME/.ssh
@@ -33,7 +33,9 @@ Host *
 __EOF__
 chown -R ${USER_NAME}: /home/$USER_NAME/.ssh
 
+# un-god mode
 grep -vE '^e2e' /etc/sudoers > /etc/sudoers.new && mv -f /etc/sudoers.new /etc/sudoers
 echo "$USER_NAME ALL = NOPASSWD: /sbin/trust,/sbin/chown" >>/etc/sudoers
 
+# cleanup
 rm -rf /var/cache /var/lib/pacman /home/$USER_NAME/.cache
