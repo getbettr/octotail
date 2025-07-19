@@ -70,7 +70,7 @@ def test_entrypoint():
 
     res = runner.invoke(app, ["babafacecaca"])
     assert res.exit_code == 2
-    assert "Invalid value" in res.stdout
+    assert "Invalid value" in res.stderr
 
     expected_opts = Opts(
         commit_sha="82e24ca0efbaa2cdd12454c6c0a2bba98a6f5e4e",
