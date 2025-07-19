@@ -107,7 +107,7 @@ class Opts:
             envvar="OCTOTAIL_GH_OTPS_CMD",
             help=(
                 "Command for generating GitHub OTPs. "
-                "Should generate at least 2 codes, one per line. (for web auth, if 2FA is on)"
+                "Should generate at least two codes, one per line. (for web auth, if 2FA is on)"
             ),
             rich_help_panel="Authentication",
         ),

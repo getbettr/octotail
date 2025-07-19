@@ -163,7 +163,7 @@ section of the mitmproxy documentation, changing `~/.mitmproxy` with
      --gh-otp             TEXT  GitHub OTP. (for web auth, if 2FA is on)
                                 [env var: OCTOTAIL_GH_OTP]
                                 [default: None]
-     --gh-otps-cmd        TEXT  Command for generating GitHub OTPs. Should generate at least 2
+     --gh-otps-cmd        TEXT  Command for generating GitHub OTPs. Should generate at least two
                                 codes, one per line. (for web auth, if 2FA is on)
                                 [env var: OCTOTAIL_GH_OTPS_CMD]
                                 [default: None]
@@ -263,8 +263,8 @@ your setup:
 - set `_GH_PASS_CMD` to a command that outputs the GitHub password, e.g. 
   `_GH_PASS_CMD="pass github.com"`
 - _if using 2FA_ - set `_GH_OTPS_CMD` to a command that outputs at least two 
-  OTP tokens, one per line
-  for the GitHub 2FA, e.g. `_GH_OTPS_CMD="oathtool -b --totp <<seed>> -w 1"`
+  OTP tokens, one per line, for the GitHub 2FA, 
+  e.g. `_GH_OTPS_CMD="oathtool -b --totp <<seed>> -w 1"`
 - set `_GH_PAT_CMD` to a command that outputs your GitHub personal access token,
   e.g. `_GH_PAT_CMD="pass github_pat"`
 
