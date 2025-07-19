@@ -162,7 +162,8 @@ section of the mitmproxy documentation, changing `~/.mitmproxy` with
      --gh-otp             TEXT  GitHub OTP. (for web auth, if 2FA is on)
                                 [env var: OCTOTAIL_GH_OTP]
                                 [default: None]
-     --gh-otps-cmd        TEXT  Command for generating GitHub OTPs. (for web auth, if 2FA is on)
+     --gh-otps-cmd        TEXT  Command for generating GitHub OTPs. Should generate at least 2
+                                codes, one per line. (for web auth, if 2FA is on)
                                 [env var: OCTOTAIL_GH_OTPS_CMD]
                                 [default: None]
 

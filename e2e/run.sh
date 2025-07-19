@@ -31,7 +31,7 @@ git push origin --force
 echo $HUBBER_CREDS | base64 -d >/tmp/hubber-creds
 source /tmp/hubber-creds
 rm -f /tmp/hubber-creds
-export OCTOTAIL_GH_OTP="$(eval $OCTOTAIL_GH_OTP_CMD | tr -d '\n')"
+export OCTOTAIL_GH_OTPS_CMD="$OCTOTAIL_GH_OTP_CMD -w 1"
 export DEBUG=1
 export PYTHONUNBUFFERED=1
 

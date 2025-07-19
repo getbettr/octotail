@@ -225,7 +225,9 @@ async def _login_flow(page: Page, opts: Opts) -> Cookies | RuntimeError:
             page.waitForNavigation(),
         )
 
-        el = await page.waitForSelector(f"[action='/settings/two_factor_checkup'], [data-login='{opts.gh_user}']")
+        el = await page.waitForSelector(
+            f"[action='/settings/two_factor_checkup'], [data-login='{opts.gh_user}']"
+        )
         el_tag = await page.evaluate("(element) => element.tagName.toLowerCase()", el)
         if el_tag == "form":
             button = await page.waitForSelector('button[type="submit"]')
@@ -269,16 +271,15 @@ def _is_close_to_expiry(ts: str) -> bool:
 
 
 def _get_otps(opts: Opts) -> list[str] | RuntimeError:
-    if opts.gh_otp is None and opts.gh_otps_cmd is None:
-        return RuntimeError(
-            "GitHub requested OTP authentication, but no OTP token or command was provided"
-        )
-
-    # gh_otp_cmd takes precedence
     if opts.gh_otps_cmd is not None:
         try:
             return check_output(opts.gh_otps_cmd, shell=True).decode().strip().split("\n")[:2]
         except CalledProcessError as cpe:
             return RuntimeError(f"Error while running OTP command: {cpe}")
-    else:
+
+    if opts.gh_otp is not None:
         return [opts.gh_otp]
+
+    return RuntimeError(
+        "GitHub requested OTP authentication, but no OTP token or command was provided"
+    )
