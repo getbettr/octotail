@@ -1,15 +1,15 @@
 #!/usr/bin/env -S zsh -li
 
-OCTOTAIL_GH_USER="github-user-here"
-_GH_PASS_CMD="zenity --entry --hide-text --title='GitHub' --text='Enter password:'"
-_GH_OTP_CMD="zenity --entry --hide-text --title='GitHub' --text='Enter OTP token:'"
-_GH_PAT_CMD="zenity --entry --hide-text --title='GitHub' --text='Enter PAT:'"
+_GH_USER="github-user-here"
+_GH_PASS_CMD="set-me"
+_GH_OTPS_CMD="set-me-if-using-2fa"
+_GH_PAT_CMD="set-me"
 
 # add --no-force to prevent overwriting the actual remote refs
 git push origin --mirror
 
 COMMIT=""; REF_NAME=""; CNT=0
-while read old_oid new_oid ref_name; do
+while read _old_oid new_oid ref_name; do
   COMMIT="$new_oid"; REF_NAME="$ref_name"; CNT=$(( CNT + 1 ))
 done
 
@@ -25,6 +25,8 @@ export PYTHONUNBUFFERED=1
 export _HEADLESS=1
 
 export OCTOTAIL_GH_PASS="$(eval $_GH_PASS_CMD)"
-export OCTOTAIL_GH_OTP="$(eval $_GH_OTP_CMD)"
+if ! test -z "$_GH_OTPS_CMD"; then
+  export OCTOTAIL_GH_OTPS_CMD="$_GH_OTPS_CMD"
+fi
 export OCTOTAIL_GH_PAT="$(eval $_GH_PAT_CMD)"
 octotail $COMMIT --ref-name $REF_NAME --gh-user "$_GH_USER"

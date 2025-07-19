@@ -252,7 +252,7 @@ git remote add proxy $PROXY_REPO
 # back to octotail
 cd -
 
-cp post-receive.sample $PROXY_REPO/hooks/post-receive
+cp examples/post-receive.sample $PROXY_REPO/hooks/post-receive
 ```
 
 Edit `$PROXY_REPO/hooks/post-receive` and change things according to 
@@ -261,8 +261,9 @@ your setup:
 - set `_GH_USER` to your GitHub username
 - set `_GH_PASS_CMD` to a command that outputs the GitHub password, e.g. 
   `_GH_PASS_CMD="pass github.com"`
-- _if using 2FA_ - set `_GH_OTP_CMD` to a command that outputs an OTP token 
-  for the GitHub 2FA, e.g. `_GH_OTP_CMD="totp github.com"`
+- _if using 2FA_ - set `_GH_OTPS_CMD` to a command that outputs at least two 
+  OTP tokens, one per line
+  for the GitHub 2FA, e.g. `_GH_OTPS_CMD="oathtool -b --totp <<seed>> -w 1"`
 - set `_GH_PAT_CMD` to a command that outputs your GitHub personal access token,
   e.g. `_GH_PAT_CMD="pass github_pat"`
 

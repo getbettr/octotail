@@ -47,7 +47,7 @@ hook_template = """#!/usr/bin/env -S {shell} -li
 git push origin --mirror
 
 COMMIT=""; REF_NAME=""; CNT=0
-while read old_oid new_oid ref_name; do
+while read _old_oid new_oid ref_name; do
   COMMIT="$new_oid"; REF_NAME="$ref_name"; CNT=$(( CNT + 1 ))
 done
 
@@ -64,8 +64,8 @@ export OCTOTAIL_HEADLESS=1
 
 export OCTOTAIL_GH_PAT="$(eval "{gh_pat_cmd}")"
 export OCTOTAIL_GH_PASS="$(eval "{gh_pass_cmd}")"
-if ! test -z "{gh_otp_cmd}"; then
-  export OCTOTAIL_GH_OTP="$(eval "{gh_otp_cmd}")"
+if ! test -z "{gh_otps_cmd}"; then
+  export OCTOTAIL_GH_OTPS_CMD="{gh_otps_cmd}"
 fi
 DEBUG=1 {octotail_cmd} $COMMIT --ref-name $REF_NAME --gh-user "{gh_user}"
 """
@@ -163,10 +163,10 @@ def install_proxy_remote() -> None:  # noqa: PLR0915
         "Enter [bold]a command[/bold] that will output your GitHub password",
         **_inject_default("OCTOTAIL_GH_PASS_CMD"),
     )
-    gh_otp_cmd = Prompt.ask(
-        "If using 2FA, enter [bold]a command[/bold] that will output the OTP token."
+    gh_otps_cmd = Prompt.ask(
+        "If using 2FA, enter [bold]a command[/bold] that will output at least two OTP tokens."
         " Leave blank if not using 2FA",
-        **_inject_default("OCTOTAIL_GH_OTP_CMD"),
+        **_inject_default("OCTOTAIL_GH_OTPS_CMD"),
     )
     gh_pat_cmd = NonEmptyPrompt.ask(
         "Enter [bold]a command[/bold] that will output a GitHub personal access token",
@@ -189,7 +189,7 @@ def install_proxy_remote() -> None:  # noqa: PLR0915
             gh_user=gh_user,
             gh_pass_cmd=gh_pass_cmd,
             gh_pat_cmd=gh_pat_cmd,
-            gh_otp_cmd=gh_otp_cmd,
+            gh_otps_cmd=gh_otps_cmd,
             octotail_cmd=octotail_cmd,
         )
     )
