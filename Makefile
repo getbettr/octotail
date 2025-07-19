@@ -7,9 +7,9 @@ default: .venv/freeze
 	. .venv/bin/activate && pip install . && pip freeze > .venv/freeze
 
 install:
-	chmod 755 $(PWD)/octotail/main.py
-	ln -sf $(PWD)/octotail/main.py $(PREFIX)/bin/octotail
-	ln -sf $(PWD)/octotail/x.py $(PREFIX)/bin/octotailx
+	chmod 755 $(shell pwd)/octotail/main.py
+	ln -sf $(shell pwd)/octotail/main.py $(PREFIX)/bin/octotail
+	ln -sf $(shell pwd)/octotail/x.py $(PREFIX)/bin/octotailx
 
 bump:
 	bumpversion patch --verbose octotail/__init__.py uv.lock --commit --sign-tags --tag
