@@ -8,14 +8,34 @@ from contextlib import suppress
 from functools import partial
 from multiprocessing.queues import JoinableQueue
 from queue import Empty
+from typing import Literal
 
 from pykka import ActorRef, ThreadingActor
 from termcolor import colored
-from termcolor._types import Color
 
 from octotail.manager import Manager
 from octotail.msg import OutputItem, StreamerMsg, WebsocketClosed
 from octotail.utils import debug, flatmap, remove_consecutive_falsy
+
+Color = Literal[
+    "black",
+    "grey",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "light_grey",
+    "dark_grey",
+    "light_red",
+    "light_green",
+    "light_yellow",
+    "light_blue",
+    "light_magenta",
+    "light_cyan",
+    "white",
+]
 
 WHEEL: list[Color] = [
     "light_green",
