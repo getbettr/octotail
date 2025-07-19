@@ -206,7 +206,10 @@ async def _login_flow(page: Page, opts: Opts) -> Cookies | RuntimeError:
     await page.keyboard.press("Tab")
 
     await page.type("#password", opts.gh_pass)
-    await page.keyboard.press("Enter")
+    await aio.gather(
+        page.keyboard.press("Enter"),
+        page.waitForNavigation(),
+    )
 
     el = await page.waitForSelector(f"#app_totp, [data-login='{opts.gh_user}']")
     el_id = await page.evaluate("(element) => element.id", el)
@@ -216,7 +219,10 @@ async def _login_flow(page: Page, opts: Opts) -> Cookies | RuntimeError:
                 "GitHub requested OTP authentication, but no OTP token was provided"
             )
         await el.type(opts.gh_otp)
-        await page.keyboard.press("Enter")
+        await aio.gather(
+            page.keyboard.press("Enter"),
+            page.waitForNavigation(),
+        )
         await page.waitForSelector(f"[data-login='{opts.gh_user}']")
 
     cookies = await page.cookies()
